@@ -7,7 +7,8 @@
 
     <ru.yandex.yamblz.ui.other.TheBestLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:padding="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -17,9 +18,9 @@
 
         <TextView
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:gravity="center"
-            android:text="100dp"
+            android:text="100x200dp"
             />
 
         <TextView
@@ -38,25 +39,49 @@
 
     <ru.yandex.yamblz.ui.other.TheBestLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="50dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Match parent "
+            android:text="Тут "
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="есть "
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="пока влез"
+            android:text="padding"
+            />
+    </ru.yandex.yamblz.ui.other.TheBestLayout>
+
+    <ru.yandex.yamblz.ui.other.TheBestLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Для match parent'а "
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="места хватило"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Match_parent"
+            android:text="Большой Match_parent"
             />
 
         <TextView
@@ -80,13 +105,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="этот match_parent "
+            android:text="Тут был match_parent"
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="стал wrap_content, почему бы и нет?"
+            android:text="исчез match_parent, что левее этих слов"
             />
     </ru.yandex.yamblz.ui.other.TheBestLayout>
 
@@ -126,28 +151,5 @@
                 />
         </ru.yandex.yamblz.ui.other.TheBestLayout>
     </HorizontalScrollView>
-
-    <ru.yandex.yamblz.ui.other.TheBestLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Тут "
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="нет "
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="никакого match_parent"
-            />
-    </ru.yandex.yamblz.ui.other.TheBestLayout>
 
 </LinearLayout>

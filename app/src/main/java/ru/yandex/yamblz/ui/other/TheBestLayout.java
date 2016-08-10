@@ -27,6 +27,7 @@ public class TheBestLayout extends ViewGroup {
         super(context, attrs, defStyleAttr);
     }
 
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int count = getChildCount();
@@ -37,12 +38,22 @@ public class TheBestLayout extends ViewGroup {
         int layoutWidthMode = getMode(widthMeasureSpec); // А тут будет UNSPECIFIED
 
         int layoutHeightSize = getSize(heightMeasureSpec); // Если же пихнуть этот ViewGroup в просто ScrollView, то тут будет ноль и всё сломается
+        int layoutHeightMode = getMode(heightMeasureSpec);
 
         int childWidthMode; // Как дети будут себя мерить по ширине
+        int childHeightMode;
+
+
         if (layoutWidthMode == UNSPECIFIED) {
             childWidthMode = UNSPECIFIED; // Раз нас не ограничивают, то и детей нет смысла ограничивать
         } else {
             childWidthMode = AT_MOST;
+        }
+
+        if (layoutHeightMode == UNSPECIFIED) {
+            childHeightMode = UNSPECIFIED;
+        } else {
+            childHeightMode = AT_MOST;
         }
 
         int currentChildWidth, currentChildHeight;
@@ -59,15 +70,17 @@ public class TheBestLayout extends ViewGroup {
             if (childLayoutParams.width == MATCH_PARENT && childWidthMode != UNSPECIFIED) {
                 childWhichIsMatchParent = child; // Потом отдадим ему всё оставшееся место
                 continue;
+
             } else if (childLayoutParams.width != WRAP_CONTENT && childLayoutParams.width != MATCH_PARENT) {
-                child.measure(
+                measureChild(
+                        child,
                         MeasureSpec.makeMeasureSpec(childLayoutParams.width, MeasureSpec.EXACTLY), // android:width = "100dp"
-                        MeasureSpec.makeMeasureSpec(layoutHeightSize, AT_MOST)
+                        MeasureSpec.makeMeasureSpec(childLayoutParams.height, childHeightMode)
                 );
             } else {
                 child.measure(
                         MeasureSpec.makeMeasureSpec(layoutWidthSize, childWidthMode),
-                        MeasureSpec.makeMeasureSpec(layoutHeightSize, AT_MOST)
+                        MeasureSpec.makeMeasureSpec(layoutHeightSize, childHeightMode)
                 );
             }
 
@@ -80,26 +93,19 @@ public class TheBestLayout extends ViewGroup {
             }
         }
 
+        int horizontalPadding = getPaddingLeft() + getPaddingRight();
+        int verticalPadding = getPaddingTop() + getPaddingBottom();
         if (childWhichIsMatchParent != null) {
-            if (totalWidth >= layoutWidthSize) { // Значит места для match_parent элемента не осталось, пусть будет каким захочет, сместив всех, кто правее него, в никуда
-                childWhichIsMatchParent.measure(
-                        MeasureSpec.makeMeasureSpec(layoutWidthSize, UNSPECIFIED),
-                        MeasureSpec.makeMeasureSpec(layoutHeightSize, AT_MOST)
-                );
+            if (totalWidth >= layoutWidthSize) {
+                // Значит места для match_parent элемента не осталось, убираем
 
-                currentChildWidth = childWhichIsMatchParent.getMeasuredWidth();
-                currentChildHeight = childWhichIsMatchParent.getMeasuredHeight();
+                childWhichIsMatchParent.setVisibility(GONE);
 
-                totalWidth += currentChildWidth;
-                if (currentChildHeight > totalHeight) {
-                    totalHeight = currentChildHeight;
-                }
-
-                setMeasuredDimension(totalWidth, totalHeight);
+                setMeasuredDimension(totalWidth + horizontalPadding, totalHeight + verticalPadding);
             } else {
                 childWhichIsMatchParent.measure(
-                        MeasureSpec.makeMeasureSpec(layoutWidthSize - totalWidth, MeasureSpec.EXACTLY), // Растягиваем
-                        MeasureSpec.makeMeasureSpec(layoutHeightSize, AT_MOST)
+                        MeasureSpec.makeMeasureSpec(layoutWidthSize - totalWidth - horizontalPadding, MeasureSpec.EXACTLY), // Растягиваем
+                        MeasureSpec.makeMeasureSpec(layoutHeightSize, childHeightMode)
                 );
 
                 currentChildHeight = childWhichIsMatchParent.getMeasuredHeight();
@@ -107,24 +113,29 @@ public class TheBestLayout extends ViewGroup {
                     totalHeight = currentChildHeight;
                 }
 
-                setMeasuredDimension(layoutWidthSize, totalHeight);
+                setMeasuredDimension(layoutWidthSize + horizontalPadding, totalHeight + verticalPadding);
             }
         } else {
-            setMeasuredDimension(totalWidth, totalHeight); // Если нет match_parent элемента
+            setMeasuredDimension(totalWidth + horizontalPadding, totalHeight + verticalPadding); // Если нет match_parent элемента
         }
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int count = getChildCount();
-        int prevChildRight = 0;
-        int prevChildBottom = 0;
+
+        int prevChildLeft = getPaddingLeft();
+        int prevChildTop = getPaddingTop();
+
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
-            child.layout(prevChildRight, prevChildBottom,
-                    prevChildRight + child.getMeasuredWidth(),
-                    prevChildBottom + child.getMeasuredHeight());
-            prevChildRight += child.getMeasuredWidth();
+
+            int childMeasuredWidth = child.getMeasuredWidth();
+            child.layout(prevChildLeft, prevChildTop,
+                    prevChildLeft + childMeasuredWidth,
+                    prevChildTop + child.getMeasuredHeight());
+
+            prevChildLeft += childMeasuredWidth;
         }
     }
 }
